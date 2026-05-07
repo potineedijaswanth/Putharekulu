@@ -1,0 +1,374 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Credits & Debits Manager</title>
+
+  <style>
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+      font-family: Arial, sans-serif;
+    }
+
+    body{
+      background:#f4f6f9;
+      padding:20px;
+    }
+
+    .container{
+      max-width:1100px;
+      margin:auto;
+    }
+
+    h1{
+      text-align:center;
+      margin-bottom:20px;
+      color:#333;
+    }
+
+    .form-container{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:20px;
+      margin-bottom:30px;
+    }
+
+    .card{
+      background:white;
+      padding:20px;
+      border-radius:12px;
+      box-shadow:0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    .credit-card{
+      border-top:5px solid #28a745;
+    }
+
+    .debit-card{
+      border-top:5px solid #dc3545;
+    }
+
+    h2{
+      margin-bottom:15px;
+      color:#444;
+    }
+
+    input, select, button{
+      width:100%;
+      padding:10px;
+      margin-bottom:12px;
+      border:1px solid #ccc;
+      border-radius:8px;
+      font-size:15px;
+    }
+
+    button{
+      background:#007bff;
+      color:white;
+      border:none;
+      cursor:pointer;
+      transition:0.3s;
+    }
+
+    button:hover{
+      background:#0056b3;
+    }
+
+    .tables{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:20px;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      background:white;
+      border-radius:12px;
+      overflow:hidden;
+      box-shadow:0 2px 8px rgba(0,0,0,0.1);
+    }
+
+    th{
+      background:#333;
+      color:white;
+      padding:12px;
+    }
+
+    td{
+      padding:10px;
+      border-bottom:1px solid #ddd;
+      text-align:center;
+    }
+
+    .summary{
+      margin-top:25px;
+      background:white;
+      padding:20px;
+      border-radius:12px;
+      box-shadow:0 2px 8px rgba(0,0,0,0.1);
+      display:flex;
+      justify-content:space-around;
+      flex-wrap:wrap;
+      gap:20px;
+    }
+
+    .summary-box{
+      text-align:center;
+    }
+
+    .credit-text{
+      color:#28a745;
+      font-size:22px;
+      font-weight:bold;
+    }
+
+    .debit-text{
+      color:#dc3545;
+      font-size:22px;
+      font-weight:bold;
+    }
+
+    .balance-text{
+      color:#007bff;
+      font-size:24px;
+      font-weight:bold;
+    }
+
+    @media(max-width:768px){
+      .form-container,
+      .tables{
+        grid-template-columns:1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+<div class="container">
+
+  <h1>Credits & Debits Manager</h1>
+
+  <div class="form-container">
+
+    <!-- Credit Form -->
+    <div class="card credit-card">
+      <h2>Add Credit</h2>
+
+      <input type="date" id="creditDate">
+      <input type="text" id="creditName" placeholder="Enter Name">
+      <input type="number" id="creditAmount" placeholder="Enter Amount">
+
+      <button onclick="addCredit()">Add Credit</button>
+    </div>
+
+    <!-- Debit Form -->
+    <div class="card debit-card">
+      <h2>Add Debit</h2>
+
+      <input type="date" id="debitDate">
+      <input type="text" id="debitName" placeholder="Enter Name">
+      <input type="number" id="debitAmount" placeholder="Enter Amount">
+
+      <button onclick="addDebit()">Add Debit</button>
+    </div>
+
+  </div>
+
+  <!-- Tables -->
+  <div class="tables">
+
+    <!-- Credit Table -->
+    <table>
+      <thead>
+        <tr>
+          <th colspan="3">Credits</th>
+        </tr>
+        <tr>
+          <th>Date</th>
+          <th>Name</th>
+          <th>Amount</th>
+        </tr>
+      </thead>
+
+      <tbody id="creditTable">
+      </tbody>
+    </table>
+
+    <!-- Debit Table -->
+    <table>
+      <thead>
+        <tr>
+          <th colspan="3">Debits</th>
+        </tr>
+        <tr>
+          <th>Date</th>
+          <th>Name</th>
+          <th>Amount</th>
+        </tr>
+      </thead>
+
+      <tbody id="debitTable">
+      </tbody>
+    </table>
+
+  </div>
+
+  <!-- Summary -->
+  <div class="summary">
+
+    <div class="summary-box">
+      <h3>Total Credits</h3>
+      <p class="credit-text" id="totalCredits">₹0</p>
+    </div>
+
+    <div class="summary-box">
+      <h3>Total Debits</h3>
+      <p class="debit-text" id="totalDebits">₹0</p>
+    </div>
+
+    <div class="summary-box">
+      <h3>Balance</h3>
+      <p class="balance-text" id="balance">₹0</p>
+    </div>
+
+  </div>
+
+</div>
+
+<script>
+
+  let credits = [
+    {date:"2026-04-29", name:"Abhiruchi", amount:15600},
+    {date:"2026-04-30", name:"Manoj father", amount:13000},
+    {date:"2026-05-05", name:"Manoj father", amount:5600}
+  ];
+
+  let debits = [
+    {date:"2026-04-29", name:"Bellam", amount:3000},
+    {date:"2026-04-30", name:"Balaraju", amount:2200},
+    {date:"2026-04-30", name:"Srikanth", amount:20000},
+    {date:"2026-05-05", name:"Bellam", amount:9000},
+    {date:"2026-05-07", name:"Recharge", amount:350}
+  ];
+
+  function renderTables(){
+
+    const creditTable = document.getElementById("creditTable");
+    const debitTable = document.getElementById("debitTable");
+
+    creditTable.innerHTML = "";
+    debitTable.innerHTML = "";
+
+    let totalCredits = 0;
+    let totalDebits = 0;
+
+    credits.forEach(item => {
+
+      totalCredits += item.amount;
+
+      creditTable.innerHTML += `
+        <tr>
+          <td>${item.date}</td>
+          <td>${item.name}</td>
+          <td>₹${item.amount}</td>
+          <td>
+            <button 
+              class="delete-btn"
+              onclick="deleteCredit(${index})">
+
+              Delete
+
+            </button>
+          </td>
+        </tr>
+      `;
+    });
+
+    debits.forEach(item => {
+
+      totalDebits += item.amount;
+
+      debitTable.innerHTML += `
+        <tr>
+          <td>${item.date}</td>
+          <td>${item.name}</td>
+          <td>₹${item.amount}</td>
+          <td>
+          <button 
+              class="delete-btn"
+              onclick="deleteDebit(${index})">
+
+              Delete
+
+            </button>
+          </td>
+        </tr>
+      `;
+    });
+
+    document.getElementById("totalCredits").innerText = `₹${totalCredits}`;
+    document.getElementById("totalDebits").innerText = `₹${totalDebits}`;
+    document.getElementById("balance").innerText = `₹${totalCredits - totalDebits}`;
+  }
+
+  function addCredit(){
+
+    const date = document.getElementById("creditDate").value;
+    const name = document.getElementById("creditName").value;
+    const amount = Number(document.getElementById("creditAmount").value);
+
+    if(date && name && amount){
+
+      credits.push({
+        date,
+        name,
+        amount
+      });
+
+      renderTables();
+
+      document.getElementById("creditDate").value = "";
+      document.getElementById("creditName").value = "";
+      document.getElementById("creditAmount").value = "";
+    }
+    else{
+      alert("Please fill all credit fields");
+    }
+  }
+
+  function addDebit(){
+
+    const date = document.getElementById("debitDate").value;
+    const name = document.getElementById("debitName").value;
+    const amount = Number(document.getElementById("debitAmount").value);
+
+    if(date && name && amount){
+
+      debits.push({
+        date,
+        name,
+        amount
+      });
+
+      renderTables();
+
+      document.getElementById("debitDate").value = "";
+      document.getElementById("debitName").value = "";
+      document.getElementById("debitAmount").value = "";
+    }
+    else{
+      alert("Please fill all debit fields");
+    }
+  }
+
+  renderTables();
+
+</script>
+
+</body>
+</html>
